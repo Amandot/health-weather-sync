@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PageTransitionContainer, PageTransition } from "@/components/ui/page-transition";
+import Navigation from "./components/Navigation";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <Navigation />
           <RoutesWithTransitions />
         </BrowserRouter>
       </TooltipProvider>

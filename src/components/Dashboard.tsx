@@ -21,7 +21,11 @@ import {
   Heart,
   Users,
   AlertTriangle,
-  TrendingUp
+  TrendingUp,
+  CloudRain,
+  Cloud,
+  CloudDrizzle,
+  Sun
 } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { MetricCard } from "./MetricCard";
@@ -124,6 +128,16 @@ const Dashboard = () => {
     if (error) return { status: "error", message: "API Connection Failed" };
     if (loading) return { status: "loading", message: "Connecting..." };
     return { status: "online", message: "All Systems Operational" };
+  };
+
+  const getWeatherIcon = (desc?: string) => {
+    const d = desc?.toLowerCase() || "";
+    if (d.includes("thunder")) return AlertTriangle;
+    if (d.includes("rain")) return CloudRain;
+    if (d.includes("drizzle")) return CloudDrizzle;
+    if (d.includes("cloud")) return Cloud;
+    if (d.includes("wind")) return Wind;
+    return Sun;
   };
 
   return (
@@ -233,7 +247,7 @@ const Dashboard = () => {
               ]}
             </StaggeredAnimation>
             
-            {/* API Status */}
+            {/* Weather Summary */}
             <motion.div 
               className="grid grid-cols-1 md:grid-cols-3 gap-6"
               initial={{ opacity: 0, y: 20 }}
@@ -241,12 +255,12 @@ const Dashboard = () => {
               transition={{ duration: 0.6, delay: 0.4 }}
             >
               <MetricCard
-                title="API Status"
-                value={getApiHealthStatus().status === "online" ? "Online" : 
-                       getApiHealthStatus().status === "loading" ? "Loading" : "Offline"}
-                icon={getApiHealthStatus().status === "online" ? Wifi : WifiOff}
-                description={getApiHealthStatus().message}
-                severity={getApiHealthStatus().status === "error" ? "critical" : "normal"}
+                title="Weather"
+                value={currentWeather?.description || "--"}
+                icon={getWeatherIcon(currentWeather?.description)}
+                description={`Current conditions in ${selectedCity.name}`}
+                severity={currentWeather?.description?.toLowerCase().includes("thunder") ? "critical" : 
+                          currentWeather?.description?.toLowerCase().includes("rain") ? "warning" : "normal"}
               />
               
               <MetricCard

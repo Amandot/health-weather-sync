@@ -34,12 +34,30 @@ const generateMockWeatherData = (city: IndianCity): WeatherData => {
   const baseTemp = baseTempMap[city.code] || 25;
   const variation = Math.random() * 6 - 3; // ±3°C variation
 
+  const temperature = Math.round(baseTemp + variation);
+  const humidity = Math.round(50 + Math.random() * 40); // 50-90%
+  const pressure = Math.round(1010 + Math.random() * 20); // 1010-1030 hPa
+  const airQuality = Math.round(50 + Math.random() * 100); // 50-150 AQI
+
+  // Derive a realistic condition description based on humidity + randomness
+  const r = Math.random();
+  let description = "Clear";
+  if (humidity > 85) {
+    description = r > 0.2 ? "Rain" : "Thunderstorm";
+  } else if (humidity > 70) {
+    description = r > 0.5 ? "Cloudy" : "Drizzle";
+  } else if (r < 0.15) {
+    description = "Windy";
+  } else {
+    description = "Clear";
+  }
+
   return {
-    temperature: Math.round(baseTemp + variation),
-    humidity: Math.round(50 + Math.random() * 40), // 50-90%
-    pressure: Math.round(1010 + Math.random() * 20), // 1010-1030 hPa
-    airQuality: Math.round(50 + Math.random() * 100), // 50-150 AQI
-    description: "Clear sky",
+    temperature,
+    humidity,
+    pressure,
+    airQuality,
+    description,
     timestamp: new Date(),
   };
 };
