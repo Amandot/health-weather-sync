@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { StaggeredAnimation } from "@/components/ui/staggered-animation";
 import { UserProfileDropdown } from "@/components/ui/user-profile-dropdown";
@@ -33,6 +33,10 @@ import { ChartCard } from "./ChartCard";
 import { AlertBanner, AlertLevel } from "./AlertBanner";
 import { CitySelector, IndianCity } from "./CitySelector";
 import { useWeatherData } from "@/hooks/useWeatherData";
+import { useAirQualityData } from "@/hooks/useAirQualityData";
+import { useForecastData } from "@/hooks/useForecastData";
+import { WeatherCharts } from "./WeatherCharts";
+import { formatTimestamp, formatChartTime } from "@/lib/utils";
 
 // Default city (Mumbai)
 const DEFAULT_CITY: IndianCity = {
@@ -52,54 +56,102 @@ const generateHealthData = () => ({
 const Dashboard = () => {
   const [selectedCity, setSelectedCity] = useState<IndianCity>(DEFAULT_CITY);
   const [healthData, setHealthData] = useState(generateHealthData());
+  const [lastFetchTime, setLastFetchTime] = useState<Date | null>(null);
   
+  // Fetch weather data using the city name
   const { 
-    currentWeather, 
-    trendData, 
-    loading, 
-    error, 
-    lastUpdated, 
-    refetch 
-  } = useWeatherData(selectedCity);
+    data: weatherData, 
+    isLoading: isLoadingWeather, 
+    isError: isErrorWeather,
+    refetch: refetchWeather
+  } = useWeatherData(selectedCity.name);
 
-  const refreshData = () => {
+  // Get coordinates from weather data for air quality
+  const lat = weatherData?.coord?.lat;
+  const lon = weatherData?.coord?.lon;
+
+  // Fetch air quality data
+  const { 
+    data: aqiData, 
+    isLoading: isLoadingAqi, 
+    isError: isErrorAqi,
+    refetch: refetchAqi
+  } = useAirQualityData(lat, lon);
+
+  // Fetch forecast data
+  const { 
+    data: forecastData, 
+    isLoading: isLoadingForecast, 
+    isError: isErrorForecast,
+    refetch: refetchForecast
+  } = useForecastData(selectedCity.name);
+
+  const refreshData = async () => {
     setHealthData(generateHealthData());
-    refetch();
+    // Refetch all weather data simultaneously
+    await Promise.all([
+      refetchWeather(),
+      refetchAqi(),
+      refetchForecast()
+    ]);
+    // Update the last fetch time to current time
+    setLastFetchTime(new Date());
   };
+
+  // Set initial fetch time when data is first loaded
+  useEffect(() => {
+    if (weatherData && !lastFetchTime) {
+      setLastFetchTime(new Date());
+    }
+  }, [weatherData, lastFetchTime]);
+
+  // Loading and error states
+  const isLoading = isLoadingWeather || isLoadingAqi || isLoadingForecast;
+  const isError = isErrorWeather || isErrorAqi || isErrorForecast;
+
+  // Process forecast data for charts (first 8 entries for ~24 hours)
+  const chartData = forecastData?.list?.slice(0, 8).map(item => ({
+    time: formatChartTime(item.dt),
+    temperature: Math.round(item.main.temp),
+    humidity: item.main.humidity
+  })) || [];
 
   // Generate alerts based on current weather
   const generateAlerts = () => {
-    if (!currentWeather) return [];
+    if (!weatherData) return [];
     
     const alerts = [];
+    const temperature = weatherData.main.temp;
+    const airQuality = aqiData?.list?.[0]?.main?.aqi;
+    const humidity = weatherData.main.humidity;
     
-    if (currentWeather.temperature > 35) {
+    if (temperature > 35) {
       alerts.push({
         id: "heat-1",
-        message: `Extreme heat alert: ${currentWeather.temperature}°C in ${selectedCity.name}`,
+        message: `Extreme heat alert: ${Math.round(temperature)}°C in ${selectedCity.name}`,
         level: "critical" as AlertLevel,
         type: "heatwave" as const,
         timestamp: new Date(),
       });
-    } else if (currentWeather.temperature > 32) {
+    } else if (temperature > 32) {
       alerts.push({
         id: "heat-2", 
-        message: `High temperature alert: ${currentWeather.temperature}°C detected`,
+        message: `High temperature alert: ${Math.round(temperature)}°C detected`,
         level: "high" as AlertLevel,
         type: "heatwave" as const,
         timestamp: new Date(),
       });
     }
     
-    if (currentWeather.airQuality > 150) {
+    if (airQuality && airQuality > 4) { // AQI scale 1-5, where 5 is very poor
       alerts.push({
         id: "aqi-1",
-        message: "Poor air quality detected - AQI above 150",
+        message: "Poor air quality detected - AQI level 5",
         level: "high" as AlertLevel,
         type: "air-quality" as const,
         timestamp: new Date(),
       });
-    } else if (currentWeather.airQuality > 100) {
+    } else if (airQuality && airQuality > 3) {
       alerts.push({
         id: "aqi-2",
         message: "Moderate air quality - AQI above normal levels", 
@@ -109,7 +161,7 @@ const Dashboard = () => {
       });
     }
     
-    if (currentWeather.humidity < 40) {
+    if (humidity < 40) {
       alerts.push({
         id: "humid-1",
         message: "Low humidity levels - stay hydrated",
@@ -125,8 +177,8 @@ const Dashboard = () => {
   const alerts = generateAlerts();
 
   const getApiHealthStatus = () => {
-    if (error) return { status: "error", message: "API Connection Failed" };
-    if (loading) return { status: "loading", message: "Connecting..." };
+    if (isError) return { status: "error", message: "API Connection Failed" };
+    if (isLoading) return { status: "loading", message: "Connecting..." };
     return { status: "online", message: "All Systems Operational" };
   };
 
@@ -139,6 +191,31 @@ const Dashboard = () => {
     if (d.includes("wind")) return Wind;
     return Sun;
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="bg-background min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-lg">Loading weather data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (isError) {
+    return (
+      <div className="bg-background min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <AlertTriangle className="h-8 w-8 mx-auto mb-4 text-destructive" />
+          <p className="text-lg mb-4">Failed to load weather data</p>
+          <Button onClick={refreshData}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-background">
@@ -155,7 +232,9 @@ const Dashboard = () => {
                   India Weather Dashboard
                 </h1>
                 <p className="text-muted-foreground">
-                  {lastUpdated ? `Last updated: ${lastUpdated.toLocaleTimeString('en-IN')}` : 'Loading...'}
+                  {lastFetchTime ? `Last updated: ${lastFetchTime.toLocaleTimeString('en-US', { 
+                    hour: '2-digit', minute: '2-digit', hour12: true 
+                  })}` : 'Loading...'}
                 </p>
               </div>
             </div>
@@ -166,11 +245,11 @@ const Dashboard = () => {
               />
               <Button 
                 onClick={refreshData} 
-                disabled={loading}
+                disabled={isLoading}
                 className="flex items-center space-x-2 hover-glow"
                 size="sm"
               >
-                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
                 <span>Refresh</span>
               </Button>
               <UserProfileDropdown />
@@ -208,38 +287,38 @@ const Dashboard = () => {
               {[
                 <MetricCard
                   title="Temperature"
-                  value={currentWeather?.temperature || "--"}
+                  value={weatherData ? Math.round(weatherData.main.temp) : "--"}
                   unit="°C"
                   icon={Thermometer}
-                  description={currentWeather?.temperature && currentWeather.temperature > 30 ? 
+                  description={weatherData?.main.temp && weatherData.main.temp > 30 ? 
                     "+2.1° from normal" : "Within normal range"}
-                  severity={currentWeather?.temperature && currentWeather.temperature > 35 ? "critical" : 
-                           currentWeather?.temperature && currentWeather.temperature > 32 ? "warning" : "normal"}
+                  severity={weatherData?.main.temp && weatherData.main.temp > 35 ? "critical" : 
+                           weatherData?.main.temp && weatherData.main.temp > 32 ? "warning" : "normal"}
                 />,
                 
                 <MetricCard
                   title="Humidity"
-                  value={currentWeather?.humidity || "--"}
+                  value={weatherData?.main.humidity || "--"}
                   unit="%"
                   icon={Droplets}
-                  description={currentWeather?.humidity && currentWeather.humidity < 40 ? 
+                  description={weatherData?.main.humidity && weatherData.main.humidity < 40 ? 
                     "Low humidity" : "Normal levels"}
                 />,
                 
                 <MetricCard
                   title="Air Quality Index"
-                  value={currentWeather?.airQuality || "--"}
+                  value={aqiData?.list?.[0]?.main?.aqi || "--"}
                   unit="AQI"
                   icon={Wind}
-                  description={currentWeather?.airQuality && currentWeather.airQuality > 100 ? 
+                  description={aqiData?.list?.[0]?.main?.aqi && aqiData.list[0].main.aqi > 3 ? 
                     "Poor quality" : "Good quality"}
-                  severity={currentWeather?.airQuality && currentWeather.airQuality > 150 ? "critical" : 
-                           currentWeather?.airQuality && currentWeather.airQuality > 100 ? "warning" : "normal"}
+                  severity={aqiData?.list?.[0]?.main?.aqi && aqiData.list[0].main.aqi > 4 ? "critical" : 
+                           aqiData?.list?.[0]?.main?.aqi && aqiData.list[0].main.aqi > 3 ? "warning" : "normal"}
                 />,
                 
                 <MetricCard
                   title="Pressure"
-                  value={currentWeather?.pressure || "--"}
+                  value={weatherData?.main.pressure || "--"}
                   unit="hPa"
                   icon={Gauge}
                   description="Atmospheric pressure"
@@ -256,20 +335,20 @@ const Dashboard = () => {
             >
               <MetricCard
                 title="Weather"
-                value={currentWeather?.description || "--"}
-                icon={getWeatherIcon(currentWeather?.description)}
+                value={weatherData?.weather?.[0]?.main || "--"}
+                icon={getWeatherIcon(weatherData?.weather?.[0]?.main)}
                 description={`Current conditions in ${selectedCity.name}`}
-                severity={currentWeather?.description?.toLowerCase().includes("thunder") ? "critical" : 
-                          currentWeather?.description?.toLowerCase().includes("rain") ? "warning" : "normal"}
+                severity={weatherData?.weather?.[0]?.main?.toLowerCase().includes("thunder") ? "critical" : 
+                          weatherData?.weather?.[0]?.main?.toLowerCase().includes("rain") ? "warning" : "normal"}
               />
               
               <MetricCard
                 title="Last Updated"
-                value={lastUpdated ? lastUpdated.toLocaleTimeString('en-IN', { 
-                  hour: '2-digit', minute: '2-digit' 
+                value={lastFetchTime ? lastFetchTime.toLocaleTimeString('en-US', { 
+                  hour: '2-digit', minute: '2-digit', hour12: true 
                 }) : "--"}
                 icon={Clock}
-                description={`Data for ${selectedCity.name}`}
+                description={`Data fetched for ${selectedCity.name}`}
               />
               
               <MetricCard
@@ -281,25 +360,7 @@ const Dashboard = () => {
             </motion.div>
 
             {/* Weather Trend Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <ChartCard
-                title="Temperature Trend (24h)"
-                description={`Real-time temperature monitoring for ${selectedCity.name}`}
-                data={trendData.map(item => ({ ...item, value: item.temperature }))}
-                dataKey="temperature"
-                color="hsl(var(--primary))"
-                unit="°C"
-              />
-              
-              <ChartCard
-                title="Humidity Trend (24h)"
-                description={`Humidity levels over time for ${selectedCity.name}`}
-                data={trendData.map(item => ({ ...item, value: item.humidity }))}
-                dataKey="humidity"
-                color="hsl(var(--accent))"
-                unit="%"
-              />
-            </div>
+            <WeatherCharts data={chartData} cityName={selectedCity.name} />
           </TabsContent>
 
           <TabsContent value="health" className="space-y-8">
@@ -358,7 +419,7 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={400}>
-                  <LineChart data={trendData}>
+                  <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="time" />
                     <YAxis />
