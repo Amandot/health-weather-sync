@@ -1,16 +1,19 @@
 {
-"functions": {
-"api/send-daily-emails.ts": {
-"maxDuration": 300
-}
-},
-"crons": [
-{
-"path": "/api/send-daily-emails",
-"schedule": "0 8 * * "
-}
-],
-"rewrites": [
-{ "source": "/(.)", "destination": "/index.html" }
-]
+  "functions": {
+    "api/send-daily-emails.ts": {
+      "maxDuration": 300
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/send-daily-emails",
+      "schedule": "0 8 * * "
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.)",
+      "destination": "/index.html"
+    }
+  ]
 }
