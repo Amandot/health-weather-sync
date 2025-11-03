@@ -8,6 +8,14 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/components/ui/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import DailyEmailScheduler from '@/components/DailyEmailScheduler';
+import DailyEmailDemo from '@/components/DailyEmailDemo';
+
+import EmailActivityLog from '@/components/EmailActivityLog';
+import EmailDebugPanel from '@/components/EmailDebugPanel';
+
+import EmailClickGuide from '@/components/EmailClickGuide';
 import { 
   Bell, 
   Mail, 
@@ -23,10 +31,11 @@ import {
   Volume2,
   VolumeX,
   Trash2,
-  MarkAsRead
+  Calendar
 } from 'lucide-react';
 
 const Notifications = () => {
+  const { user } = useAuth();
   const [notificationSettings, setNotificationSettings] = useState({
     email: {
       enabled: true,
@@ -185,15 +194,17 @@ const Notifications = () => {
             <span>{unreadCount} unread</span>
           </Badge>
           <Button variant="outline" size="sm">
-            <MarkAsRead className="h-4 w-4 mr-2" />
+            <CheckCircle className="h-4 w-4 mr-2" />
             Mark All Read
           </Button>
         </div>
       </motion.div>
 
       <Tabs defaultValue="alerts" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="alerts">Recent Alerts</TabsTrigger>
+          <TabsTrigger value="daily">Daily Reports</TabsTrigger>
+          <TabsTrigger value="activity">Email Activity</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
@@ -310,6 +321,44 @@ const Notifications = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Daily Reports Tab */}
+        <TabsContent value="daily" className="space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="space-y-6"
+          >
+            {user && (
+              <>
+                <EmailClickGuide />
+                <DailyEmailDemo 
+                  userEmail={user.email || ''} 
+                  userName={user.displayName || 'User'} 
+                />
+                <DailyEmailScheduler 
+                  userEmail={user.email || ''} 
+                  userName={user.displayName || 'User'} 
+                />
+                <EmailDebugPanel userEmail={user.email || ''} />
+              </>
+            )}
+          </motion.div>
+        </TabsContent>
+
+        {/* Email Activity Tab */}
+        <TabsContent value="activity" className="space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            {user && (
+              <EmailActivityLog userEmail={user.email || ''} />
+            )}
+          </motion.div>
         </TabsContent>
 
         {/* Settings Tab */}

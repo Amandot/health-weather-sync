@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { StaggeredAnimation } from "@/components/ui/staggered-animation";
-import { UserProfileDropdown } from "@/components/ui/user-profile-dropdown";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -252,7 +252,6 @@ const Dashboard = () => {
                 <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
                 <span>Refresh</span>
               </Button>
-              <UserProfileDropdown />
             </div>
           </div>
         </div>

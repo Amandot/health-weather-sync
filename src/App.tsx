@@ -8,9 +8,13 @@ import Dashboard from "./components/Dashboard";
 import Settings from "./components/Settings";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import Notifications from "./pages/Notifications";
+import Overview from "./pages/Overview";
+import Health from "./pages/Health";
+import Profile from "./pages/Profile";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { PageTransitionContainer, PageTransition } from "@/components/ui/page-transition";
+import { PageTransitionContainer, EnhancedPageTransition } from "@/components/ui/enhanced-page-transition";
 import Navigation from "./components/Navigation";
 
 const queryClient = new QueryClient();
@@ -20,13 +24,45 @@ const RoutesWithTransitions = () => {
   return (
     <PageTransitionContainer>
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PageTransition variant="fade"><LandingPage /></PageTransition>} />
-        <Route path="/login" element={<PageTransition variant="scale"><Login /></PageTransition>} />
+        <Route path="/" element={<EnhancedPageTransition variant="blur"><LandingPage /></EnhancedPageTransition>} />
+        <Route path="/login" element={<EnhancedPageTransition variant="scale"><Login /></EnhancedPageTransition>} />
+        <Route 
+          path="/overview" 
+          element={
+            <ProtectedRoute>
+              <EnhancedPageTransition variant="slideUp"><Overview /></EnhancedPageTransition>
+            </ProtectedRoute>
+          } 
+        />
         <Route 
           path="/dashboard" 
           element={
             <ProtectedRoute>
-              <PageTransition variant="slide"><Dashboard /></PageTransition>
+              <EnhancedPageTransition variant="slide"><Dashboard /></EnhancedPageTransition>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/health" 
+          element={
+            <ProtectedRoute>
+              <EnhancedPageTransition variant="rotate"><Health /></EnhancedPageTransition>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/notifications" 
+          element={
+            <ProtectedRoute>
+              <EnhancedPageTransition variant="slide"><Notifications /></EnhancedPageTransition>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute>
+              <EnhancedPageTransition variant="scale"><Profile /></EnhancedPageTransition>
             </ProtectedRoute>
           } 
         />
@@ -34,12 +70,12 @@ const RoutesWithTransitions = () => {
           path="/settings" 
           element={
             <ProtectedRoute>
-              <PageTransition variant="slideUp"><Settings /></PageTransition>
+              <EnhancedPageTransition variant="slideUp"><Settings /></EnhancedPageTransition>
             </ProtectedRoute>
           } 
         />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-        <Route path="*" element={<PageTransition variant="fade"><NotFound /></PageTransition>} />
+        <Route path="*" element={<EnhancedPageTransition variant="fade"><NotFound /></EnhancedPageTransition>} />
       </Routes>
     </PageTransitionContainer>
   );
@@ -49,12 +85,16 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Navigation />
-          <RoutesWithTransitions />
-        </BrowserRouter>
+        <div className="min-h-screen bg-gradient-surface">
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Navigation />
+            <main className="relative">
+              <RoutesWithTransitions />
+            </main>
+          </BrowserRouter>
+        </div>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
