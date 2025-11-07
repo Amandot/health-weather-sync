@@ -1,35 +1,55 @@
 {
-  "name": "ClimateWatch - Climate & Public Health Monitoring",
+  "id": "/?app=climatewatch",
+  "name": "ClimateWatch",
   "short_name": "ClimateWatch",
-  "description": "Real-time climate monitoring and public health tracking platform with AI-powered predictions",
-  "start_url": "/",
+  "description": "Real-time climate monitoring and public health tracking with AI-powered predictions.",
+  "start_url": "/?source=pwa",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0d6efd",
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "scope": "/",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-  "categories": ["health", "weather", "utilities"],
-  "screenshots": [],
+  "screenshots": [
+    {
+      "src": "/icons/screenshot-portrait.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/icons/screenshot-landscape.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "categories": ["health", "weather", "productivity"],
   "shortcuts": [
     {
       "name": "Dashboard",
       "short_name": "Dashboard",
       "description": "View your climate dashboard",
-      "url": "/",
+      "url": "/?source=pwa",
       "icons": [
         {
           "src": "/icons/icon-192x192.png",

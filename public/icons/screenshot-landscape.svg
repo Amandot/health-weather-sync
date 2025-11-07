@@ -1,0 +1,41 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1920" height="1080" fill="#0d6efd"/>
+  
+  <!-- Header -->
+  <rect width="1920" height="150" fill="#0a58ca"/>
+  <text x="960" y="95" font-family="Arial, sans-serif" font-size="64" font-weight="bold" fill="white" text-anchor="middle">ClimateWatch Dashboard</text>
+  
+  <!-- Content Area - 3 columns -->
+  <g transform="translate(100, 250)">
+    <!-- Column 1 -->
+    <rect width="520" height="650" rx="20" fill="white" opacity="0.95"/>
+    <text x="260" y="80" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="#0d6efd" text-anchor="middle">Climate Data</text>
+    <circle cx="260" cy="200" r="80" fill="#0d6efd" opacity="0.2"/>
+    <text x="260" y="225" font-family="Arial, sans-serif" font-size="72" text-anchor="middle">🌡️</text>
+    <text x="260" y="320" font-family="Arial, sans-serif" font-size="32" fill="#666" text-anchor="middle">Temperature</text>
+    <text x="260" y="370" font-family="Arial, sans-serif" font-size="32" fill="#666" text-anchor="middle">Humidity</text>
+    <text x="260" y="420" font-family="Arial, sans-serif" font-size="32" fill="#666" text-anchor="middle">Air Quality</text>
+    <text x="260" y="470" font-family="Arial, sans-serif" font-size="32" fill="#666" text-anchor="middle">Precipitation</text>
+    
+    <!-- Column 2 -->
+    <rect x="600" width="520" height="650" rx="20" fill="white" opacity="0.95"/>
+    <text x="860" y="80" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="#0d6efd" text-anchor="middle">AI Predictions</text>
+    <circle cx="860" cy="200" r="80" fill="#0d6efd" opacity="0.2"/>
+    <text x="860" y="225" font-family="Arial, sans-serif" font-size="72" text-anchor="middle">🤖</text>
+    <text x="860" y="320" font-family="Arial, sans-serif" font-size="32" fill="#666" text-anchor="middle">7-Day Forecast</text>
+    <text x="860" y="370" font-family="Arial, sans-serif" font-size="32" fill="#666" text-anchor="middle">Risk Analysis</text>
+    <text x="860" y="420" font-family="Arial, sans-serif" font-size="32" fill="#666" text-anchor="middle">Smart Alerts</text>
+    <text x="860" y="470" font-family="Arial, sans-serif" font-size="32" fill="#666" text-anchor="middle">Trends</text>
+    
+    <!-- Column 3 -->
+    <rect x="1200" width="520" height="650" rx="20" fill="white" opacity="0.95"/>
+    <text x="1460" y="80" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="#0d6efd" text-anchor="middle">Health Insights</text>
+    <circle cx="1460" cy="200" r="80" fill="#0d6efd" opacity="0.2"/>
+    <text x="1460" y="225" font-family="Arial, sans-serif" font-size="72" text-anchor="middle">💊</text>
+    <text x="1460" y="320" font-family="Arial, sans-serif" font-size="32" fill="#666" text-anchor="middle">Health Alerts</text>
+    <text x="1460" y="370" font-family="Arial, sans-serif" font-size="32" fill="#666" text-anchor="middle">Disease Tracking</text>
+    <text x="1460" y="420" font-family="Arial, sans-serif" font-size="32" fill="#666" text-anchor="middle">Impact Analysis</text>
+    <text x="1460" y="470" font-family="Arial, sans-serif" font-size="32" fill="#666" text-anchor="middle">Reports</text>
+  </g>
+</svg>

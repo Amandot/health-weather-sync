@@ -1,0 +1,35 @@
+<svg width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1080" height="1920" fill="#0d6efd"/>
+  
+  <!-- Header -->
+  <rect width="1080" height="200" fill="#0a58ca"/>
+  <text x="540" y="120" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">ClimateWatch</text>
+  
+  <!-- Content Area -->
+  <g transform="translate(90, 300)">
+    <!-- Dashboard Card 1 -->
+    <rect width="900" height="300" rx="20" fill="white" opacity="0.95"/>
+    <text x="450" y="80" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#0d6efd" text-anchor="middle">Real-Time Monitoring</text>
+    <text x="450" y="150" font-family="Arial, sans-serif" font-size="36" fill="#666" text-anchor="middle">Track climate & health data</text>
+    <circle cx="450" cy="230" r="40" fill="#0d6efd" opacity="0.2"/>
+    <text x="450" y="245" font-family="Arial, sans-serif" font-size="48" text-anchor="middle">🌡️</text>
+    
+    <!-- Dashboard Card 2 -->
+    <rect y="350" width="900" height="300" rx="20" fill="white" opacity="0.95"/>
+    <text x="450" y="430" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#0d6efd" text-anchor="middle">AI Predictions</text>
+    <text x="450" y="500" font-family="Arial, sans-serif" font-size="36" fill="#666" text-anchor="middle">Smart forecasting & alerts</text>
+    <circle cx="450" cy="580" r="40" fill="#0d6efd" opacity="0.2"/>
+    <text x="450" y="595" font-family="Arial, sans-serif" font-size="48" text-anchor="middle">🤖</text>
+    
+    <!-- Dashboard Card 3 -->
+    <rect y="700" width="900" height="300" rx="20" fill="white" opacity="0.95"/>
+    <text x="450" y="780" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#0d6efd" text-anchor="middle">Health Insights</text>
+    <text x="450" y="850" font-family="Arial, sans-serif" font-size="36" fill="#666" text-anchor="middle">Public health tracking</text>
+    <circle cx="450" cy="930" r="40" fill="#0d6efd" opacity="0.2"/>
+    <text x="450" y="945" font-family="Arial, sans-serif" font-size="48" text-anchor="middle">💊</text>
+  </g>
+  
+  <!-- Footer -->
+  <text x="540" y="1800" font-family="Arial, sans-serif" font-size="32" fill="white" text-anchor="middle" opacity="0.8">Stay informed. Stay healthy.</text>
+</svg>
