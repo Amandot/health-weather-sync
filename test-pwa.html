@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PWA Test - ClimateWatch</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .status {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      font-weight: 500;
+    }
+    .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+    button {
+      background: #0d6efd;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+    }
+    button:hover { background: #0b5ed7; }
+    h1 { color: #0d6efd; }
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 PWA Configuration Test</h1>
+  <p>This page tests if your PWA is configured correctly.</p>
+
+  <div id="results"></div>
+
+  <h2>Manual Tests</h2>
+  <button onclick="testManifest()">Test Manifest</button>
+  <button onclick="testServiceWorker()">Test Service Worker</button>
+  <button onclick="testIcons()">Test Icons</button>
+  <button onclick="testOffline()">Test Offline Page</button>
+
+  <script>
+    const results = document.getElementById('results');
+
+    function addResult(message, type = 'success') {
+      const div = document.createElement('div');
+      div.className = `status ${type}`;
+      div.innerHTML = message;
+      results.appendChild(div);
+    }
+
+    // Auto-run tests on load
+    window.addEventListener('load', () => {
+      runAllTests();
+    });
+
+    async function runAllTests() {
+      results.innerHTML = '<h2>Test Results</h2>';
+      
+      // Test 1: Service Worker Support
+      if ('serviceWorker' in navigator) {
+        addResult('✅ Service Worker API is supported', 'success');
+      } else {
+        addResult('❌ Service Worker API is NOT supported', 'error');
+      }
+
+      // Test 2: Manifest
+      const manifestLink = document.querySelector('link[rel="manifest"]');
+      if (manifestLink) {
+        addResult('✅ Manifest link found in HTML', 'success');
+        try {
+          const response = await fetch('/manifest.json');
+          if (response.ok) {
+            const manifest = await response.json();
+            addResult(`✅ Manifest loaded: <code>${manifest.name}</code>`, 'success');
+          } else {
+            addResult('❌ Manifest file not accessible', 'error');
+          }
+        } catch (e) {
+          addResult('❌ Error loading manifest: ' + e.message, 'error');
+        }
+      } else {
+        addResult('❌ Manifest link NOT found in HTML', 'error');
+      }
+
+      // Test 3: Service Worker Registration
+      try {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration) {
+          addResult(`✅ Service Worker registered at: <code>${registration.scope}</code>`, 'success');
+        } else {
+          addResult('⚠️ Service Worker not yet registered (may need page reload)', 'warning');
+        }
+      } catch (e) {
+        addResult('❌ Error checking Service Worker: ' + e.message, 'error');
+      }
+
+      // Test 4: HTTPS
+      if (location.protocol === 'https:' || location.hostname === 'localhost') {
+        addResult('✅ Running on HTTPS or localhost', 'success');
+      } else {
+        addResult('⚠️ Not running on HTTPS (required for production PWA)', 'warning');
+      }
+
+      // Test 5: Theme Color
+      const themeColor = document.querySelector('meta[name="theme-color"]');
+      if (themeColor) {
+        addResult(`✅ Theme color set: <code>${themeColor.content}</code>`, 'success');
+      } else {
+        addResult('⚠️ Theme color meta tag not found', 'warning');
+      }
+
+      // Test 6: Viewport
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport) {
+        addResult('✅ Viewport meta tag found', 'success');
+      } else {
+        addResult('❌ Viewport meta tag missing', 'error');
+      }
+    }
+
+    async function testManifest() {
+      try {
+        const response = await fetch('/manifest.json');
+        const manifest = await response.json();
+        alert('Manifest loaded successfully!\n\n' + JSON.stringify(manifest, null, 2));
+      } catch (e) {
+        alert('Error loading manifest: ' + e.message);
+      }
+    }
+
+    async function testServiceWorker() {
+      try {
+        const registration = await navigator.serviceWorker.register('/service-worker.js');
+        alert('Service Worker registered!\nScope: ' + registration.scope);
+      } catch (e) {
+        alert('Service Worker registration failed: ' + e.message);
+      }
+    }
+
+    async function testIcons() {
+      const icons = [
+        '/icons/icon-192x192.png',
+        '/icons/icon-512x512.png'
+      ];
+      
+      for (const icon of icons) {
+        try {
+          const response = await fetch(icon);
+          if (response.ok) {
+            console.log(`✅ ${icon} exists`);
+          } else {
+            console.error(`❌ ${icon} not found`);
+          }
+        } catch (e) {
+          console.error(`❌ Error loading ${icon}:`, e);
+        }
+      }
+      alert('Check console for icon test results');
+    }
+
+    async function testOffline() {
+      try {
+        const response = await fetch('/offline.html');
+        if (response.ok) {
+          alert('✅ Offline page exists and is accessible');
+        } else {
+          alert('❌ Offline page not found');
+        }
+      } catch (e) {
+        alert('❌ Error loading offline page: ' + e.message);
+      }
+    }
+  </script>
+</body>
+</html>

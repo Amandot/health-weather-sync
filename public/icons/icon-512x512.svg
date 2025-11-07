@@ -1,0 +1,17 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" fill="#0d6efd" rx="85"/>
+  <g transform="translate(256, 256)">
+    <!-- Cloud icon -->
+    <path d="M-110,-50 Q-135,-95 -95,-120 Q-80,-135 -55,-128 Q-40,-150 -15,-150 Q15,-150 30,-128 Q55,-135 70,-120 Q110,-95 85,-50 Z" fill="white" opacity="0.9"/>
+    <!-- Sun rays -->
+    <circle cx="0" cy="30" r="40" fill="#FFD700"/>
+    <line x1="0" y1="-40" x2="0" y2="-70" stroke="#FFD700" stroke-width="8" stroke-linecap="round"/>
+    <line x1="40" y1="-10" x2="60" y2="-30" stroke="#FFD700" stroke-width="8" stroke-linecap="round"/>
+    <line x1="40" y1="70" x2="60" y2="90" stroke="#FFD700" stroke-width="8" stroke-linecap="round"/>
+    <line x1="-40" y1="-10" x2="-60" y2="-30" stroke="#FFD700" stroke-width="8" stroke-linecap="round"/>
+    <line x1="-40" y1="70" x2="-60" y2="90" stroke="#FFD700" stroke-width="8" stroke-linecap="round"/>
+    <line x1="55" y1="30" x2="80" y2="30" stroke="#FFD700" stroke-width="8" stroke-linecap="round"/>
+    <line x1="-55" y1="30" x2="-80" y2="30" stroke="#FFD700" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <text x="256" y="420" font-family="Arial, sans-serif" font-size="64" font-weight="bold" fill="white" text-anchor="middle">ClimateWatch</text>
+</svg>
